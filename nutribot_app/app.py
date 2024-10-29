@@ -46,4 +46,4 @@ def nutribot():
         return jsonify({"error": response.text}), response.status_code
 
 if __name__ == "__main__":
-    app.run(port=5001)
+    app.run(host="0.0.0.0", port=5000)  # Bind to 0.0.0.0 and set port to 5000
