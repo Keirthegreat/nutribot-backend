@@ -14,7 +14,7 @@ ALLOWED_KEYWORDS = ["fitness", "nutrition", "workout", "calories", "diet", "exer
 
 @app.route('/')
 def home():
-    return render_template('index.html')  # Serve the HTML template
+    return render_template('nutribot.html')  # Serve the HTML template
 
 @app.route('/nutribot', methods=['POST'])
 def nutribot():
