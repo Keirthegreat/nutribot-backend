@@ -4,6 +4,7 @@ import requests
 
 app = Flask(__name__)
 CORS(app, resources={r"/nutribot": {"origins": ["http://127.0.0.1:3000", "https://your-frontend-deployment.com"]}})
+CORS(app, origins=["https://keirthegreat.github.io"]) # Allow only your GitHub Pages domain
 
 # Your Groq API Key
 API_KEY = "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"  # Replace with your actual Groq API key
