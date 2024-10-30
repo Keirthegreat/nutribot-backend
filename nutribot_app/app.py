@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, url_for
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
 
@@ -11,10 +11,6 @@ API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 # Define keywords related to allowed topics
 ALLOWED_KEYWORDS = ["fitness", "nutrition", "workout", "calories", "diet", "exercise"]
-
-@app.route('/')
-def home():
-    return render_template('nutribot.html')  # Serve the HTML template
 
 @app.route('/nutribot', methods=['POST'])
 def nutribot():
