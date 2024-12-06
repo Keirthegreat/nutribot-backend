@@ -5,15 +5,13 @@ import random  # For randomizing responses
 
 app = Flask(__name__)
 
-# Set up CORS with multiple allowed origins
+# Allow all Vercel subdomains
 CORS(app, resources={
     r"/nutribot": {
         "origins": [
             "http://127.0.0.1:3000",
-            "https://your-frontend-deployment.com",
-            "https://keirthegreat.github.io",
-            "https://nutri-fit-living-dj2jjsmrq-keirsephs-projects.vercel.app",
-            "https://nutri-fit-living-git-main-keirsephs-projects.vercel.app"
+            "*.vercel.app",  # Allow all Vercel deployment URLs
+            "https://keirthegreat.github.io"
         ]
     }
 })
