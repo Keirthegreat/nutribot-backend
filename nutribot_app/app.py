@@ -5,16 +5,24 @@ import random  # For randomizing responses
 
 app = Flask(__name__)
 
-# Allow all Vercel subdomains
-CORS(app, resources={
-    r"/nutribot": {
-        "origins": [
-            "http://127.0.0.1:3000",
-            "*.vercel.app",  # Allow all Vercel deployment URLs
-            "https://keirthegreat.github.io"
-        ]
-    }
-})
+app = Flask(__name__)
+
+# Allow all origins temporarily (not recommended for production)
+CORS(app, resources={r"/nutribot": {"origins": "*"}})
+
+@app.after_request
+def handle_cors(response):
+    origin = request.headers.get('Origin')
+    # Dynamically allow origins from *.vercel.app or other allowed domains
+    if origin and (".vercel.app" in origin or origin in [
+        "http://127.0.0.1:3000",
+        "https://keirthegreat.github.io"
+    ]):
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    return response
 
 
 # Your Groq API Key
