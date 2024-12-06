@@ -4,8 +4,19 @@ import requests
 import random  # For randomizing responses
 
 app = Flask(__name__)
-CORS(app, resources={r"/nutribot": {"origins": ["http://127.0.0.1:3000", "https://your-frontend-deployment.com"]}})
-CORS(app, resources={r"/nutribot": {"origins": ["https://keirthegreat.github.io", "https://nutri-fit-living-dj2jjsmrq-keirsephs-projects.vercel.app"]}})
+
+# Set up CORS with multiple allowed origins
+CORS(app, resources={
+    r"/nutribot": {
+        "origins": [
+            "http://127.0.0.1:3000",
+            "https://your-frontend-deployment.com",
+            "https://keirthegreat.github.io",
+            "https://nutri-fit-living-dj2jjsmrq-keirsephs-projects.vercel.app",
+            "https://nutri-fit-living-git-main-keirsephs-projects.vercel.app"
+        ]
+    }
+})
 
 
 # Your Groq API Key
