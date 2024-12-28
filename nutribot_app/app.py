@@ -15,7 +15,11 @@ Session(app)
 @app.after_request
 def handle_cors(response):
     origin = request.headers.get('Origin')
-    if origin and (".vercel.app" in origin or origin in ["http://127.0.0.1:3000", "https://keirthegreat.github.io"]):
+    # Dynamically allow origins from *.vercel.app or other allowed domains
+    if origin and (".vercel.app" in origin or origin in [
+        "http://127.0.0.1:3000",
+        "https://keirthegreat.github.io"
+    ]):
         response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
