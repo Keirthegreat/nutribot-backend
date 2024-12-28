@@ -15,16 +15,18 @@ Session(app)
 @app.after_request
 def handle_cors(response):
     origin = request.headers.get('Origin')
-    # Dynamically allow origins from *.vercel.app or other allowed domains
-    if origin and (".vercel.app" in origin or origin in [
+    allowed_origins = [
         "http://127.0.0.1:3000",
-        "https://keirthegreat.github.io"
-    ]):
+        "https://keirthegreat.github.io",
+        "https://www.nutrifitliving.website"
+    ]
+    if origin and (".vercel.app" in origin or origin in allowed_origins):
         response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     return response
+
 
 API_KEY = "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"
 API_URL = "https://api.groq.com/openai/v1/chat/completions"
