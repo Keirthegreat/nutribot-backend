@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 import requests
 import random  # For randomizing responses
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Needed for session management
 
 # Allow all origins temporarily (not recommended for production)
 CORS(app, resources={r"/nutribot": {"origins": "*"}})
@@ -40,18 +41,43 @@ DEFAULT_RESPONSES = [
     "Let’s stay on track with fitness and nutrition topics. I’d love to help you with your health goals!"
 ]
 
+def fetch_user_profile(user_id):
+    url = f"https://your-backend.com/fetchUserFitnessProfile.php?user_id={user_id}"  # Replace with your actual endpoint
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()  # Assuming your endpoint returns JSON data
+    else:
+        return None
+
 @app.route('/nutribot', methods=['POST'])
 def nutribot():
     user_message = request.json.get("message", "").strip()  # Get user message and strip extra spaces
+    
+    # Assuming user_id is stored in session
+    user_id = session.get('user_id')  
+    if not user_id:
+        return jsonify({"response": "User ID not found in session."})
+
+    # Fetch user profile data
+    user_profile = fetch_user_profile(user_id)
+    if not user_profile:
+        return jsonify({"response": "Failed to fetch user profile data."})
 
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
     }
 
+    # Create a system message with user profile data
+    system_message = {
+        "role": "system",
+        "content": f"User profile: {user_profile}. Provide personalized fitness and nutrition recommendations based on this data."
+    }
+
     # Payload for Groq API
     payload = {
         "messages": [
+            system_message,
             {"role": "user", "content": user_message}
         ],
         "model": "llama3-8b-8192",
@@ -76,3 +102,4 @@ def nutribot():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)  # Bind to 0.0.0.0 and set port to 5000
+
