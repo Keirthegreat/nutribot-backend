@@ -40,57 +40,39 @@ DEFAULT_RESPONSES = [
     "Let’s stay on track with fitness and nutrition topics. I’d love to help you with your health goals!"
 ]
 
-def fetch_user_profile(user_id):
-    url = f"https://nutrifit-backend.onrender.com/fetchUserFitnessProfile.php?user_id={user_id}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        profile_data = response.json()
-        user_info = {
-            "full_name": profile_data.get("full_name"),
-            "height": profile_data.get("height"),
-            "weight": profile_data.get("weight"),
-            "target_weight": profile_data.get("target_weight"),
-            "ideal_bmi": profile_data.get("ideal_bmi")
-        }
-        return user_info
-    else:
-        return {"error": "Failed to fetch user profile data"}
-
 @app.route('/nutribot', methods=['POST'])
 def nutribot():
-    user_message = request.json.get("message", "").strip()
-    
-    # Retrieve user_id from session
-    user_id = session.get('user_id')
-    
-    if not user_id:
-        return jsonify({"response": "User ID not found in session."})
+    user_message = request.json.get("message", "").strip()  # Get user message and strip extra spaces
 
-    user_profile = fetch_user_profile(user_id)
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
     }
+
+    # Payload for Groq API
     payload = {
         "messages": [
-            {"role": "user", "content": user_message},
-            {"role": "system", "content": f"User profile: {user_profile}. Provide personalized fitness and nutrition recommendations based on this data."}
+            {"role": "user", "content": user_message}
         ],
         "model": "llama3-8b-8192",
         "temperature": 0.5,
         "max_tokens": 1024,
         "top_p": 1
     }
+
     response = requests.post(API_URL, json=payload, headers=headers)
+
     if response.status_code == 200:
         data = response.json()
         bot_reply = data["choices"][0]["message"]["content"]
+        # Check if bot reply mentions fitness-related topics; otherwise, default reply
         if any(word in bot_reply.lower() for word in ["fitness", "workout", "diet", "calories", "exercise"]):
             return jsonify({"response": bot_reply})
         else:
             return jsonify({"response": random.choice(DEFAULT_RESPONSES)})
     else:
+        # Return default response on API error
         return jsonify({"response": random.choice(DEFAULT_RESPONSES)})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000)  # Bind to 0.0.0.0 and set port to 5000
