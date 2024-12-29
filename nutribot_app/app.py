@@ -52,11 +52,10 @@ def fetch_user_profile(user_id):
 @app.route('/nutribot', methods=['POST'])
 def nutribot():
     user_message = request.json.get("message", "").strip()  # Get user message and strip extra spaces
-    
-    # Assuming user_id is stored in session
-    user_id = session.get('user_id')  
+    user_id = request.json.get("user_id")  # Get user ID from request body
+
     if not user_id:
-        return jsonify({"response": "User ID not found in session."})
+        return jsonify({"response": "User ID not found in request."})
 
     # Fetch user profile data
     user_profile = fetch_user_profile(user_id)
@@ -102,4 +101,3 @@ def nutribot():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)  # Bind to 0.0.0.0 and set port to 5000
-
