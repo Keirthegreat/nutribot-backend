@@ -1,35 +1,32 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
-import random
-from flask_session import Session
+import random  # For randomizing responses
 
 app = Flask(__name__)
-CORS(app, resources={r"/nutribot": {"origins": "*"}})
 
-# Configure server-side session
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SECRET_KEY'] = 'your_secret_key'
-Session(app)
+# Allow all origins temporarily (not recommended for production)
+CORS(app, resources={r"/nutribot": {"origins": "*"}})
 
 @app.after_request
 def handle_cors(response):
     origin = request.headers.get('Origin')
-    allowed_origins = [
+    # Dynamically allow origins from *.vercel.app or other allowed domains
+    if origin and (".vercel.app" in origin or origin in [
         "http://127.0.0.1:3000",
-        "https://keirthegreat.github.io",
-        "https://www.nutrifitliving.website"
-    ]
-    if origin and (".vercel.app" in origin or origin in allowed_origins):
+        "https://keirthegreat.github.io"
+    ]):
         response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     return response
 
-
-API_KEY = "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"
+# Your Groq API Key
+API_KEY = "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"  # Replace with your actual Groq API key
 API_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+# Default responses for non-fitness-related questions
 DEFAULT_RESPONSES = [
     "I’m your personal fitness assistant, here to help with questions about fitness, nutrition, workouts, and calories only. Let’s keep it focused on those topics!",
     "It seems your question isn’t related to fitness. Try asking me about workouts, meal plans, or calorie tracking!",
